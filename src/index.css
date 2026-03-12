@@ -1,0 +1,116 @@
+/* src/index.css
+   Global styles, font imports, and print styles.
+   Component-specific styles live inline in each component. */
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+/* ── Reset ────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin:     0;
+  padding:    0;
+}
+
+/* ── Root ─────────────────────────────────────────────────────── */
+
+:root {
+  font-synthesis:       none;
+  text-rendering:       optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #060a0f;
+  color:      #b8cfe0;
+  font-family: 'IBM Plex Mono', 'Courier New', monospace;
+  line-height: 1.5;
+  min-height:  100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* ── Scrollbar ────────────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width:  5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #060a0f;
+}
+::-webkit-scrollbar-thumb {
+  background:    #1c2836;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2a3a50;
+}
+
+/* ── Focus styles ─────────────────────────────────────────────── */
+
+:focus-visible {
+  outline:        2px solid #4a90d9;
+  outline-offset: 2px;
+}
+
+/* ── Selection ────────────────────────────────────────────────── */
+
+::selection {
+  background: #1a3a5c;
+  color:      #ddeeff;
+}
+
+/* ── Animations ───────────────────────────────────────────────── */
+
+@keyframes fadeUp {
+  from {
+    opacity:   0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity:   1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Print styles ─────────────────────────────────────────────── */
+/* When user clicks Print / Export PDF in ReportTab */
+
+@media print {
+  header,
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    color:      #000000 !important;
+  }
+
+  /* Force all dark backgrounds to white for printing */
+  * {
+    background: transparent !important;
+    color:      #000000 !important;
+    border-color: #cccccc !important;
+    box-shadow: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+}
