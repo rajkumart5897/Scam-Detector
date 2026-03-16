@@ -1,82 +1,81 @@
 // src/components/tabs/MetricsTab.jsx
-// Displays all ML model performance metrics:
-//   - Precision, Recall, F1, Accuracy cards
-//   - Confusion matrix
-//   - Dataset statistics
-//   - Category breakdown bar chart
-//   - Engine weight visualization
-//   - Model architecture summary
-
-import { Card, Badge, SectionTitle }         from "../ui";
+import { Card, Badge, SectionTitle }              from "../ui";
 import { THEME, FLAG_CATEGORIES, SEVERITY_COLOR } from "../../constants/config";
 
-// ─── Metric card ──────────────────────────────────────────────────────────────
-// Reusable card for a single metric value with a progress bar.
+const MODEL_COLORS = {
+  lr:   "#8b5cf6",
+  nb:   "#06b6d4",
+  rf:   "#f59e0b",
+  svm:  "#ec4899",
+  bert: "#10b981",
+};
+
+const MODEL_LABELS = {
+  lr:   "Logistic Regression",
+  nb:   "Naive Bayes",
+  rf:   "Random Forest",
+  svm:  "SVM",
+  bert: "DistilBERT",
+};
+
+// ── Metric card ───────────────────────────────────────────────────────────────
 
 function MetricCard({ label, value, description, color, format = "percent" }) {
-  const display = value === null
-    ? "—"
-    : format === "percent"
-      ? `${Math.round(value * 100)}%`
-      : format === "score"
-        ? `${value}/100`
-        : value;
+  const display = value == null ? "—"
+    : format === "percent" ? `${Math.round(value * 100)}%`
+    : format === "score"   ? `${value}`
+    : value;
 
-  const barWidth = value === null
-    ? 0
-    : format === "percent"
-      ? Math.round(value * 100)
-      : format === "score"
-        ? value
-        : 0;
+  const barWidth = value == null ? 0
+    : format === "percent" ? Math.round(value * 100)
+    : format === "score"   ? value : 0;
 
   return (
     <div style={{
-      background:   THEME.bg,
+      background:   "rgba(255,255,255,0.02)",
       border:       `1px solid ${THEME.border}`,
-      borderRadius: "6px",
-      padding:      "16px",
+      borderRadius: "7px",
+      padding:      "14px",
+      transition:   "border-color 0.15s",
     }}>
       <div style={{
         fontSize:      "9px",
         letterSpacing: "0.12em",
-        color:         THEME.textDim,
+        color:         THEME.textFaint,
         marginBottom:  "8px",
       }}>
         {label.toUpperCase()}
       </div>
-
       <div style={{
-        fontSize:   "30px",
-        fontWeight: 700,
-        color:      value === null ? THEME.textFaint : color,
+        fontSize:   "28px",
+        fontWeight: 600,
+        color:      value == null ? THEME.textFaint : color,
         lineHeight: 1,
+        fontVariantNumeric: "tabular-nums",
       }}>
         {display}
       </div>
-
-      {/* Progress bar */}
       <div style={{
-        height:       "3px",
+        height:       "2px",
         background:   THEME.border,
-        borderRadius: "2px",
+        borderRadius: "1px",
         margin:       "10px 0 8px",
         overflow:     "hidden",
       }}>
         <div style={{
           height:       "100%",
           width:        `${barWidth}%`,
-          background:   value === null ? THEME.border : color,
-          borderRadius: "2px",
+          background:   value == null ? THEME.border : color,
+          borderRadius: "1px",
           transition:   "width 0.8s ease",
+          boxShadow:    value != null ? `0 0 6px ${color}80` : "none",
         }} />
       </div>
-
       <div style={{
         fontSize:   "10px",
         color:      THEME.textFaint,
         lineHeight: 1.5,
-        fontFamily: "'IBM Plex Sans', sans-serif",
+        fontFamily: "var(--font-sans, sans-serif)",
       }}>
         {description}
       </div>
@@ -84,7 +83,84 @@ function MetricCard({ label, value, description, color, format = "percent" }) {
   );
 }
 
-// ─── Confusion matrix ─────────────────────────────────────────────────────────
+// ── Per-model row ─────────────────────────────────────────────────────────────
+
+function ModelRow({ modelKey, metrics, prob, time, score }) {
+  const color = MODEL_COLORS[modelKey] || THEME.accent;
+  const label = MODEL_LABELS[modelKey] || modelKey;
+  const pct   = prob != null ? Math.round(prob * 100) : null;
+
+  return (
+    <div style={{
+      display:      "flex",
+      alignItems:   "center",
+      gap:          "12px",
+      padding:      "12px 0",
+      borderBottom: `1px solid ${THEME.borderLight}`,
+    }}>
+      {/* Color dot + name */}
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: "160px" }}>
+        <div style={{
+          width:        "8px",
+          height:       "8px",
+          borderRadius: "50%",
+          background:   color,
+          boxShadow:    `0 0 6px ${color}`,
+          flexShrink:   0,
+        }} />
+        <span style={{ fontSize: "12px", color: THEME.textMuted }}>{label}</span>
+      </div>
+
+      {/* Score bar */}
+      <div style={{ flex: 1 }}>
+        <div style={{
+          height:       "4px",
+          background:   THEME.border,
+          borderRadius: "2px",
+          overflow:     "hidden",
+        }}>
+          <div style={{
+            height:       "100%",
+            width:        score != null ? `${score}%` : "0%",
+            background:   color,
+            borderRadius: "2px",
+            transition:   "width 0.8s ease",
+            boxShadow:    `0 0 6px ${color}60`,
+          }} />
+        </div>
+      </div>
+
+      {/* Score value */}
+      <div style={{
+        minWidth:   "40px",
+        textAlign:  "right",
+        fontSize:   "13px",
+        fontWeight: 600,
+        color:      score != null ? color : THEME.textFaint,
+        fontVariantNumeric: "tabular-nums",
+      }}>
+        {score != null ? score : "—"}
+      </div>
+
+      {/* Metrics */}
+      <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
+        {metrics && (
+          <>
+            <Badge color={color}>F1 {Math.round(metrics.f1 * 100)}%</Badge>
+            <Badge color={color}>Acc {Math.round(metrics.accuracy * 100)}%</Badge>
+          </>
+        )}
+        {time != null && (
+          <span style={{ fontSize: "10px", color: THEME.textFaint }}>
+            {time}ms
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Confusion matrix ──────────────────────────────────────────────────────────
 
 function ConfusionMatrix({ matrix }) {
   if (!matrix) return null;
@@ -92,51 +168,51 @@ function ConfusionMatrix({ matrix }) {
   const total = tp + fp + fn + tn;
 
   const cells = [
-    { label: "True Positive",  value: tp, color: "#22c55e", desc: "Scam correctly identified"    },
-    { label: "False Positive", value: fp, color: "#f59e0b", desc: "Legit wrongly flagged as scam" },
-    { label: "False Negative", value: fn, color: "#f97316", desc: "Scam missed by model"          },
-    { label: "True Negative",  value: tn, color: "#4a90d9", desc: "Legit correctly cleared"       },
+    { label: "True Positive",  value: tp, color: "#10b981", desc: "Scam correctly identified"     },
+    { label: "False Positive", value: fp, color: "#f59e0b", desc: "Legit wrongly flagged"          },
+    { label: "False Negative", value: fn, color: "#f97316", desc: "Scam missed by model"           },
+    { label: "True Negative",  value: tn, color: "#3b82f6", desc: "Legit correctly cleared"        },
   ];
 
   return (
     <Card>
-      <SectionTitle accent="#a78bfa">Confusion Matrix</SectionTitle>
-
-      {/* 2x2 grid */}
+      <SectionTitle accent="#8b5cf6">Confusion Matrix</SectionTitle>
       <div style={{
         display:             "grid",
         gridTemplateColumns: "1fr 1fr",
         gap:                 "8px",
-        marginBottom:        "16px",
+        marginBottom:        "14px",
       }}>
         {cells.map(({ label, value, color, desc }) => (
           <div key={label} style={{
-            background:   `${color}11`,
-            border:       `1px solid ${color}33`,
-            borderRadius: "6px",
+            background:   `${color}08`,
+            border:       `1px solid ${color}25`,
+            borderRadius: "7px",
             padding:      "14px",
             textAlign:    "center",
           }}>
             <div style={{
-              fontSize:   "28px",
-              fontWeight: 700,
+              fontSize:   "26px",
+              fontWeight: 600,
               color,
               lineHeight: 1,
+              fontVariantNumeric: "tabular-nums",
             }}>
               {value}
             </div>
             <div style={{
-              fontSize:      "10px",
+              fontSize:      "9px",
               color,
               letterSpacing: "0.08em",
               margin:        "4px 0",
+              fontWeight:    500,
             }}>
               {label.toUpperCase()}
             </div>
             <div style={{
               fontSize:   "10px",
               color:      THEME.textFaint,
-              fontFamily: "'IBM Plex Sans', sans-serif",
+              fontFamily: "var(--font-sans, sans-serif)",
               lineHeight: 1.4,
             }}>
               {desc}
@@ -144,36 +220,32 @@ function ConfusionMatrix({ matrix }) {
           </div>
         ))}
       </div>
-
-      {/* Axis labels */}
       <div style={{
         display:        "flex",
         justifyContent: "space-between",
         fontSize:       "10px",
         color:          THEME.textDim,
-        letterSpacing:  "0.1em",
-        borderTop:      `1px solid ${THEME.border}`,
+        letterSpacing:  "0.08em",
+        borderTop:      `1px solid ${THEME.borderLight}`,
         paddingTop:     "10px",
       }}>
-        <span>TOTAL EVALUATED: {total} samples</span>
-        <span>
-          CORRECT: {tp + tn} ({total > 0 ? Math.round(((tp + tn) / total) * 100) : 0}%)
-        </span>
+        <span>TOTAL: {total} samples</span>
+        <span>CORRECT: {tp + tn} ({total > 0 ? Math.round(((tp+tn)/total)*100) : 0}%)</span>
       </div>
     </Card>
   );
 }
 
-// ─── Category breakdown bar chart ─────────────────────────────────────────────
+// ── Category breakdown ────────────────────────────────────────────────────────
 
-function CategoryBreakdown({ breakdown, redFlagsTotal }) {
+function CategoryBreakdown({ breakdown, total }) {
   const CATEGORY_COLOR = {
     Financial:  "#ef4444",
     Identity:   "#f97316",
     Legitimacy: "#f59e0b",
     Language:   "#94a3b8",
-    Process:    "#a78bfa",
-    Contact:    "#38bdf8",
+    Process:    "#8b5cf6",
+    Contact:    "#06b6d4",
   };
 
   return (
@@ -181,11 +253,8 @@ function CategoryBreakdown({ breakdown, redFlagsTotal }) {
       <SectionTitle>Signal Category Breakdown</SectionTitle>
       {FLAG_CATEGORIES.map(cat => {
         const count = breakdown?.[cat] || 0;
-        const pct   = redFlagsTotal > 0
-          ? Math.round((count / redFlagsTotal) * 100)
-          : 0;
+        const pct   = total > 0 ? Math.round((count / total) * 100) : 0;
         const color = CATEGORY_COLOR[cat] || THEME.accent;
-
         return (
           <div key={cat} style={{
             display:     "flex",
@@ -193,42 +262,39 @@ function CategoryBreakdown({ breakdown, redFlagsTotal }) {
             gap:         "12px",
             marginBottom:"10px",
           }}>
-            {/* Category label */}
             <div style={{
               width:         "90px",
               fontSize:      "10px",
               color:         count > 0 ? color : THEME.textFaint,
               textAlign:     "right",
               flexShrink:    0,
-              letterSpacing: "0.06em",
+              letterSpacing: "0.04em",
             }}>
               {cat}
             </div>
-
-            {/* Bar */}
             <div style={{
               flex:         1,
-              height:       "6px",
+              height:       "4px",
               background:   THEME.border,
-              borderRadius: "3px",
+              borderRadius: "2px",
               overflow:     "hidden",
             }}>
               <div style={{
                 height:       "100%",
                 width:        `${pct}%`,
                 background:   count > 0 ? color : THEME.border,
-                borderRadius: "3px",
+                borderRadius: "2px",
                 transition:   "width 0.6s ease",
+                boxShadow:    count > 0 ? `0 0 6px ${color}60` : "none",
               }} />
             </div>
-
-            {/* Count */}
             <div style={{
               width:      "20px",
               fontSize:   "11px",
-              fontWeight: count > 0 ? 700 : 400,
+              fontWeight: count > 0 ? 600 : 400,
               color:      count > 0 ? color : THEME.textFaint,
               flexShrink: 0,
+              fontVariantNumeric: "tabular-nums",
             }}>
               {count}
             </div>
@@ -239,280 +305,291 @@ function CategoryBreakdown({ breakdown, redFlagsTotal }) {
   );
 }
 
-// ─── Dataset stats ────────────────────────────────────────────────────────────
-
-function DatasetStats({ stats, vocabSize, epochs, architecture }) {
-  if (!stats) return null;
-
-  const items = [
-    { label: "Total Training Samples", value: stats.total         },
-    { label: "Scam Examples",          value: stats.scamCount     },
-    { label: "Legitimate Examples",    value: stats.legitCount    },
-    { label: "Vocabulary Size",        value: vocabSize ?? "—"    },
-    { label: "Training Epochs",        value: epochs    ?? "—"    },
-  ];
-
-  return (
-    <Card>
-      <SectionTitle accent="#38bdf8">Dataset & Training Info</SectionTitle>
-
-      <div style={{
-        display:             "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
-        gap:                 "10px",
-        marginBottom:        "16px",
-      }}>
-        {items.map(({ label, value }) => (
-          <div key={label} style={{
-            background:   THEME.bg,
-            border:       `1px solid ${THEME.border}`,
-            borderRadius: "5px",
-            padding:      "12px",
-            textAlign:    "center",
-          }}>
-            <div style={{
-              fontSize:   "22px",
-              fontWeight: 700,
-              color:      THEME.accent,
-              lineHeight: 1,
-            }}>
-              {value}
-            </div>
-            <div style={{
-              fontSize:      "9px",
-              color:         THEME.textFaint,
-              marginTop:     "5px",
-              letterSpacing: "0.08em",
-              lineHeight:    1.4,
-            }}>
-              {label.toUpperCase()}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Architecture */}
-      {architecture && (
-        <div style={{
-          background:   THEME.bg,
-          border:       `1px solid ${THEME.border}`,
-          borderRadius: "5px",
-          padding:      "12px 16px",
-        }}>
-          <div style={{
-            fontSize:      "9px",
-            letterSpacing: "0.12em",
-            color:         THEME.textDim,
-            marginBottom:  "6px",
-          }}>
-            MODEL ARCHITECTURE
-          </div>
-          <div style={{
-            fontSize:   "11px",
-            color:      "#a78bfa",
-            fontFamily: "inherit",
-            lineHeight: 1.6,
-          }}>
-            {architecture}
-          </div>
-        </div>
-      )}
-    </Card>
-  );
-}
-
-// ─── Engine weight visualization ──────────────────────────────────────────────
-
-function EngineWeights({ engineScores }) {
-  const weights = [
-    {
-      label:  "Rule Engine",
-      weight: 55,
-      score:  engineScores.rules,
-      color:  "#4a90d9",
-      desc:   "Pattern matching, keyword detection, regex rules",
-    },
-    {
-      label:  "TF.js Neural Net",
-      weight: 45,
-      score:  engineScores.tfAvailable ? engineScores.tensorflow : null,
-      color:  "#a78bfa",
-      desc:   "Bag-of-words + feedforward neural network classifier",
-    },
-  ];
-
-  return (
-    <Card>
-      <SectionTitle accent="#4a90d9">Hybrid Engine Weights</SectionTitle>
-      {weights.map(({ label, weight, score, color, desc }) => (
-        <div key={label} style={{ marginBottom: "16px" }}>
-          <div style={{
-            display:        "flex",
-            justifyContent: "space-between",
-            alignItems:     "center",
-            marginBottom:   "6px",
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <div style={{
-                width:        "8px",
-                height:       "8px",
-                borderRadius: "50%",
-                background:   color,
-                flexShrink:   0,
-              }} />
-              <span style={{ fontSize: "12px", color: THEME.textMuted }}>{label}</span>
-              <Badge color={color}>{weight}% weight</Badge>
-            </div>
-            <span style={{
-              fontSize:   "13px",
-              fontWeight: 700,
-              color:      score !== null ? color : THEME.textFaint,
-            }}>
-              {score !== null ? `${score}/100` : "N/A"}
-            </span>
-          </div>
-
-          {/* Weight bar */}
-          <div style={{
-            height:       "4px",
-            background:   THEME.border,
-            borderRadius: "2px",
-            overflow:     "hidden",
-            marginBottom: "6px",
-          }}>
-            <div style={{
-              height:     "100%",
-              width:      `${weight}%`,
-              background: color,
-              borderRadius: "2px",
-            }} />
-          </div>
-
-          <div style={{
-            fontSize:   "10px",
-            color:      THEME.textFaint,
-            fontFamily: "'IBM Plex Sans', sans-serif",
-          }}>
-            {desc}
-          </div>
-        </div>
-      ))}
-    </Card>
-  );
-}
-
-// ─── Main component ───────────────────────────────────────────────────────────
+// ── Main ──────────────────────────────────────────────────────────────────────
 
 export default function MetricsTab({ result }) {
-  const { modelPerformance, categoryBreakdown, redFlags, engineScores } = result;
-  const mp = modelPerformance;
+  const { modelPerformance: mp, categoryBreakdown, redFlags, engineScores } = result;
 
-  // ── TF not yet ready ────────────────────────────────────────────────────────
-  if (!mp?.tfAvailable && mp?.precision === null) {
+  if (!mp) {
     return (
       <Card>
         <div style={{
           textAlign:  "center",
-          padding:    "40px 20px",
+          padding:    "40px",
           color:      THEME.textDim,
           fontSize:   "13px",
-          fontFamily: "'IBM Plex Sans', sans-serif",
-          lineHeight: 1.8,
+          fontFamily: "var(--font-sans, sans-serif)",
         }}>
-          <div style={{ fontSize: "24px", marginBottom: "12px" }}>⟳</div>
-          TensorFlow.js model is still training in the background.
-          <br />
-          Run another analysis in a few seconds to see full metrics.
+          No metrics available yet.
         </div>
       </Card>
     );
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
 
-      {/* ── Primary ML metrics ──────────────────────────────────────── */}
+      {/* ── Header note ───────────────────────────────────────────── */}
       <Card>
         <SectionTitle>Model Performance — Classification Report</SectionTitle>
         <p style={{
           fontSize:   "12px",
           color:      THEME.textDim,
           margin:     "0 0 18px",
-          fontFamily: "'IBM Plex Sans', sans-serif",
+          fontFamily: "var(--font-sans, sans-serif)",
           lineHeight: 1.6,
         }}>
-          Metrics computed by evaluating the trained TF.js classifier
-          against all {mp?.datasetStats?.total ?? "—"} labeled training samples.
+          Metrics computed by evaluating all models against the labeled training
+          dataset. Hardware tier: <Badge color={THEME.accent}>{mp.hardwareTier || "LOW"}</Badge>
+          {mp.totalTimeMs && (
+            <span style={{ marginLeft: "8px" }}>
+              Total analysis time: <Badge color="#10b981">{mp.totalTimeMs}ms</Badge>
+            </span>
+          )}
         </p>
 
+        {/* Summary metric cards */}
         <div style={{
           display:             "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
-          gap:                 "12px",
+          gridTemplateColumns: "repeat(auto-fill, minmax(140px,1fr))",
+          gap:                 "10px",
         }}>
           <MetricCard
-            label="Precision"
-            value={mp?.precision}
-            description="Of postings flagged as scam, fraction that are actually scam"
-            color="#ef4444"
-          />
-          <MetricCard
-            label="Recall"
-            value={mp?.recall}
-            description="Of actual scam postings, fraction the model correctly caught"
-            color="#f97316"
-          />
-          <MetricCard
-            label="F1 Score"
-            value={mp?.f1Score}
-            description="Harmonic mean of precision and recall — overall model quality"
-            color="#a78bfa"
-          />
-          <MetricCard
-            label="Accuracy"
-            value={mp?.accuracy ?? mp?.trainAccuracy}
-            description="Fraction of all predictions that were correct"
-            color="#22c55e"
-          />
-          <MetricCard
             label="Confidence"
-            value={mp?.confidence}
-            description="Model certainty for this specific prediction"
-            color="#4a90d9"
+            value={mp.confidence}
+            description="Model certainty for this prediction"
+            color="#3b82f6"
           />
           <MetricCard
             label="Signal Density"
-            value={mp?.signalDensity}
-            description="Fraction of rules that fired on this posting"
+            value={mp.signalDensity}
+            description="Fraction of rules fired"
             color="#f59e0b"
+          />
+          <MetricCard
+            label="Features Analyzed"
+            value={mp.featuresAnalyzed}
+            description="Total rules checked"
+            color="#8b5cf6"
+            format="raw"
+          />
+          <MetricCard
+            label="Flags Found"
+            value={mp.featuresFired}
+            description="Rules that fired"
+            color="#ef4444"
+            format="raw"
           />
         </div>
       </Card>
 
-      {/* ── Confusion matrix ────────────────────────────────────────── */}
-      <ConfusionMatrix matrix={mp?.confusionMatrix} />
+      {/* ── Per-model breakdown ───────────────────────────────────── */}
+      <Card>
+        <SectionTitle accent="#8b5cf6">Per-Model Scores & Metrics</SectionTitle>
+        <div>
+          {[
+            { key: "lr",   metrics: mp.lr,  prob: mp.lrProb,   time: mp.lrTime,   score: engineScores?.lr   },
+            { key: "nb",   metrics: mp.nb,  prob: mp.nbProb,   time: mp.nbTime,   score: engineScores?.nb   },
+            { key: "rf",   metrics: mp.rf,  prob: mp.rfProb,   time: mp.rfTime,   score: engineScores?.rf   },
+            { key: "svm",  metrics: mp.svm, prob: mp.svmProb,  time: mp.svmTime,  score: engineScores?.svm  },
+            { key: "bert", metrics: null,   prob: mp.bertProb, time: mp.bertTime, score: engineScores?.bert },
+          ].map(({ key, metrics, prob, time, score }) => (
+            <ModelRow
+              key={key}
+              modelKey={key}
+              metrics={metrics}
+              prob={prob}
+              time={time ? Math.round(time) : null}
+              score={score}
+            />
+          ))}
+        </div>
 
-      {/* ── Two column row ──────────────────────────────────────────── */}
-      <div style={{
-        display:             "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gap:                 "16px",
-      }}>
-        <CategoryBreakdown
-          breakdown={categoryBreakdown}
-          redFlagsTotal={redFlags.length}
-        />
-        <EngineWeights engineScores={engineScores} />
-      </div>
+        {/* Ensemble */}
+        <div style={{
+          marginTop:    "12px",
+          padding:      "12px",
+          background:   "rgba(59,130,246,0.05)",
+          border:       "1px solid rgba(59,130,246,0.15)",
+          borderRadius: "6px",
+          display:      "flex",
+          justifyContent: "space-between",
+          alignItems:   "center",
+        }}>
+          <div>
+            <div style={{
+              fontSize:      "10px",
+              letterSpacing: "0.1em",
+              color:         THEME.textDim,
+              marginBottom:  "2px",
+            }}>
+              ENSEMBLE FINAL
+            </div>
+            <div style={{
+              fontSize:   "11px",
+              color:      THEME.textMuted,
+              fontFamily: "var(--font-sans, sans-serif)",
+            }}>
+              {mp.bertProb != null
+                ? "BERT(40%) + LR(15%) + NB(15%) + RF(15%) + SVM(15%)"
+                : "LR(25%) + NB(25%) + RF(25%) + SVM(25%) — BERT unavailable"}
+            </div>
+          </div>
+          <div style={{
+            fontSize:   "28px",
+            fontWeight: 700,
+            color:      "#3b82f6",
+            fontVariantNumeric: "tabular-nums",
+          }}>
+            {engineScores?.ensemble ?? "—"}
+          </div>
+        </div>
+      </Card>
 
-      {/* ── Dataset and training info ────────────────────────────────── */}
-      <DatasetStats
-        stats={mp?.datasetStats}
-        vocabSize={mp?.vocabSize}
-        epochs={mp?.epochs}
-        architecture={mp?.architecture}
+      {/* ── Sklearn eval metrics ──────────────────────────────────── */}
+      {(mp.lr || mp.nb || mp.rf || mp.svm) && (
+        <Card>
+          <SectionTitle>Training Evaluation Metrics</SectionTitle>
+          <div style={{
+            display:             "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(200px,1fr))",
+            gap:                 "10px",
+          }}>
+            {["lr","nb","rf","svm"].map(key => {
+              const m     = mp[key];
+              const color = MODEL_COLORS[key];
+              if (!m) return null;
+              return (
+                <div key={key} style={{
+                  background:   "rgba(255,255,255,0.02)",
+                  border:       `1px solid ${color}25`,
+                  borderRadius: "7px",
+                  padding:      "14px",
+                }}>
+                  <div style={{
+                    display:        "flex",
+                    justifyContent: "space-between",
+                    alignItems:     "center",
+                    marginBottom:   "10px",
+                  }}>
+                    <span style={{
+                      fontSize:   "11px",
+                      fontWeight: 500,
+                      color:      THEME.textPrimary,
+                    }}>
+                      {MODEL_LABELS[key]}
+                    </span>
+                    <Badge color={color}>
+                      F1 {Math.round(m.f1 * 100)}%
+                    </Badge>
+                  </div>
+                  {[
+                    ["Precision", m.precision],
+                    ["Recall",    m.recall],
+                    ["Accuracy",  m.accuracy],
+                  ].map(([label, val]) => (
+                    <div key={label} style={{
+                      display:        "flex",
+                      justifyContent: "space-between",
+                      alignItems:     "center",
+                      marginBottom:   "6px",
+                    }}>
+                      <span style={{ fontSize: "10px", color: THEME.textDim }}>{label}</span>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <div style={{
+                          width:        "60px",
+                          height:       "3px",
+                          background:   THEME.border,
+                          borderRadius: "2px",
+                          overflow:     "hidden",
+                        }}>
+                          <div style={{
+                            height:     "100%",
+                            width:      `${Math.round(val*100)}%`,
+                            background: color,
+                            borderRadius: "2px",
+                          }} />
+                        </div>
+                        <span style={{
+                          fontSize:   "11px",
+                          fontWeight: 500,
+                          color,
+                          minWidth:   "32px",
+                          textAlign:  "right",
+                          fontVariantNumeric: "tabular-nums",
+                        }}>
+                          {Math.round(val * 100)}%
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      )}
+
+      {/* ── Confusion matrix ──────────────────────────────────────── */}
+      {mp.lr?.confusion && (
+        <ConfusionMatrix matrix={{
+          tp: mp.lr.confusion[1]?.[1] ?? 0,
+          fp: mp.lr.confusion[0]?.[1] ?? 0,
+          fn: mp.lr.confusion[1]?.[0] ?? 0,
+          tn: mp.lr.confusion[0]?.[0] ?? 0,
+        }} />
+      )}
+
+      {/* ── Category breakdown ────────────────────────────────────── */}
+      <CategoryBreakdown
+        breakdown={categoryBreakdown}
+        total={redFlags?.length || 0}
       />
 
+      {/* ── Dataset info ──────────────────────────────────────────── */}
+      {mp.datasetStats && (
+        <Card>
+          <SectionTitle accent="#06b6d4">Dataset & Hardware Info</SectionTitle>
+          <div style={{
+            display:             "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(140px,1fr))",
+            gap:                 "10px",
+          }}>
+            {[
+              { label: "Total Samples",  value: mp.datasetStats.total,      color: THEME.accent  },
+              { label: "Scam Examples",  value: mp.datasetStats.scamCount,  color: "#ef4444"     },
+              { label: "Legit Examples", value: mp.datasetStats.legitCount, color: "#10b981"     },
+              { label: "Hardware Tier",  value: mp.hardwareTier || "LOW",   color: "#f59e0b", raw: true },
+            ].map(({ label, value, color, raw }) => (
+              <div key={label} style={{
+                background:   "rgba(255,255,255,0.02)",
+                border:       `1px solid ${THEME.border}`,
+                borderRadius: "6px",
+                padding:      "12px",
+                textAlign:    "center",
+              }}>
+                <div style={{
+                  fontSize:   raw ? "16px" : "22px",
+                  fontWeight: 600,
+                  color,
+                  lineHeight: 1,
+                  fontVariantNumeric: "tabular-nums",
+                }}>
+                  {value}
+                </div>
+                <div style={{
+                  fontSize:      "9px",
+                  color:         THEME.textFaint,
+                  marginTop:     "5px",
+                  letterSpacing: "0.08em",
+                }}>
+                  {label.toUpperCase()}
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
     </div>
   );
 }

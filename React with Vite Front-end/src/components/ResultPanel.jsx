@@ -32,7 +32,7 @@ export default function ResultPanel({
     metrics:  <MetricsTab  result={result} />,
     report:   <ReportTab   result={result} />,
     history:  <HistoryTab
-                history={history       || []}
+                history={history        || []}
                 historyStats={historyStats}
                 historyLoading={historyLoading}
                 onDelete={onDelete}
@@ -41,7 +41,17 @@ export default function ResultPanel({
   };
 
   return (
-    <div>
+    <div style={{ animation: "fadeUp 0.3s ease" }}>
+      <style>{`
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(10px); }
+          to   { opacity: 1; transform: translateY(0);    }
+        }
+        .tab-btn { transition: all 0.15s; }
+        .tab-btn:hover { color: var(--text-color) !important; }
+      `}</style>
+
+      {/* Risk banner */}
       <RiskBanner result={result} />
 
       {/* Tab bar */}
@@ -51,43 +61,62 @@ export default function ResultPanel({
         borderBottom: `1px solid ${THEME.border}`,
         marginBottom: "16px",
         overflowX:    "auto",
+        scrollbarWidth: "none",
       }}>
         {TABS.map(tab => {
           const isActive = activeTab === tab.id;
+          const isHistory = tab.id === "history";
+          const count = isHistory && history?.length > 0
+            ? history.length : null;
+
           return (
             <button
               key={tab.id}
+              className="tab-btn"
               onClick={() => setActiveTab(tab.id)}
               title={tab.desc}
               style={{
-                padding:       "10px 20px",
+                padding:       "10px 18px",
                 fontSize:      "10px",
-                letterSpacing: "0.12em",
-                background:    isActive ? THEME.surface : "transparent",
+                letterSpacing: "0.1em",
+                background:    "transparent",
                 border:        "none",
                 borderBottom:  isActive
                   ? `2px solid ${THEME.accent}`
                   : "2px solid transparent",
-                color:         isActive ? THEME.accent : THEME.textDim,
+                color:         isActive
+                  ? THEME.accent
+                  : THEME.textDim,
                 cursor:        "pointer",
                 fontFamily:    "inherit",
+                fontWeight:    isActive ? 500 : 400,
                 textTransform: "uppercase",
                 marginBottom:  "-1px",
                 whiteSpace:    "nowrap",
-                transition:    "all 0.15s",
+                display:       "flex",
+                alignItems:    "center",
+                gap:           "6px",
+                "--text-color": isActive ? THEME.accent : THEME.textMuted,
               }}
             >
               {tab.label}
-              {tab.id === "history" && history?.length > 0 && (
+              {count != null && (
                 <span style={{
-                  marginLeft:    "5px",
-                  background:    THEME.border,
-                  borderRadius:  "8px",
-                  padding:       "1px 5px",
+                  background:    isActive
+                    ? `${THEME.accent}20`
+                    : THEME.border,
+                  border:        `1px solid ${isActive ? THEME.accent + "40" : "transparent"}`,
+                  borderRadius:  "10px",
+                  padding:       "0 6px",
                   fontSize:      "9px",
-                  color:         THEME.textMuted,
+                  color:         isActive ? THEME.accent : THEME.textDim,
+                  fontWeight:    600,
+                  lineHeight:    "16px",
+                  display:       "inline-block",
+                  minWidth:      "18px",
+                  textAlign:     "center",
                 }}>
-                  {history.length}
+                  {count}
                 </span>
               )}
             </button>
@@ -95,8 +124,8 @@ export default function ResultPanel({
         })}
       </div>
 
-      {/* Active tab */}
-      <div style={{ animation: "fadeUp 0.3s ease" }}>
+      {/* Active tab content */}
+      <div key={activeTab} style={{ animation: "fadeUp 0.2s ease" }}>
         {tabComponents[activeTab]}
       </div>
     </div>

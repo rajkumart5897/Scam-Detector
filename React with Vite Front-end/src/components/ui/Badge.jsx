@@ -1,19 +1,19 @@
 // src/components/ui/Badge.jsx
-// A small inline label used for severity, categories, and status tags.
-
-export default function Badge({ children, color = "#4a90d9", style = {} }) {
+export default function Badge({ children, color = "#3b82f6", style = {} }) {
   return (
     <span style={{
-      display:       "inline-block",
-      padding:       "2px 9px",
-      borderRadius:  "3px",
+      display:       "inline-flex",
+      alignItems:    "center",
+      padding:       "2px 8px",
+      borderRadius:  "4px",
       fontSize:      "10px",
-      letterSpacing: "0.1em",
-      fontWeight:    700,
+      letterSpacing: "0.08em",
+      fontWeight:    500,
       color,
-      border:        `1px solid ${color}44`,
-      background:    `${color}11`,
+      border:        `1px solid ${color}30`,
+      background:    `${color}12`,
       whiteSpace:    "nowrap",
+      lineHeight:    1.6,
       ...style,
     }}>
       {children}

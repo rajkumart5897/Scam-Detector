@@ -1,18 +1,6 @@
 // src/components/tabs/ReportTab.jsx
-// A clean, print-ready forensic report assembling all analysis
-// results into a single scrollable document.
-// Sections:
-//   1. Report header (metadata, risk level, action)
-//   2. Executive summary
-//   3. Detailed findings (all red flags)
-//   4. Positive signals
-//   5. ML model performance summary
-//   6. Conclusion
-
-import { Card, Badge, SectionTitle }             from "../ui";
-import { THEME, SEVERITY_COLOR, RISK_CONFIG }    from "../../constants/config";
-
-// ─── Divider ──────────────────────────────────────────────────────────────────
+import { Card, Badge, SectionTitle }          from "../ui";
+import { THEME, SEVERITY_COLOR, RISK_CONFIG } from "../../constants/config";
 
 function Divider() {
   return (
@@ -23,8 +11,6 @@ function Divider() {
     }} />
   );
 }
-
-// ─── Metadata row ─────────────────────────────────────────────────────────────
 
 function MetaRow({ label, value, valueColor }) {
   return (
@@ -37,7 +23,7 @@ function MetaRow({ label, value, valueColor }) {
     }}>
       <span style={{
         fontSize:      "10px",
-        letterSpacing: "0.12em",
+        letterSpacing: "0.1em",
         color:         THEME.textDim,
       }}>
         {label.toUpperCase()}
@@ -45,18 +31,14 @@ function MetaRow({ label, value, valueColor }) {
       <span style={{
         fontSize:   "12px",
         color:      valueColor || THEME.textMuted,
-        fontWeight: valueColor ? 700 : 400,
-        fontFamily: "'IBM Plex Sans', sans-serif",
+        fontWeight: valueColor ? 600 : 400,
+        fontFamily: "var(--font-sans, sans-serif)",
       }}>
         {value}
       </span>
     </div>
   );
 }
-
-// ─── Finding block ────────────────────────────────────────────────────────────
-// One per red flag — numbered, with all detail inline (no accordion needed
-// in the report view since this is meant to be read top to bottom).
 
 function FindingBlock({ flag, index }) {
   const sevColor = SEVERITY_COLOR[flag.severity];
@@ -65,18 +47,17 @@ function FindingBlock({ flag, index }) {
     Identity:   "#f97316",
     Legitimacy: "#f59e0b",
     Language:   "#94a3b8",
-    Process:    "#a78bfa",
-    Contact:    "#38bdf8",
+    Process:    "#8b5cf6",
+    Contact:    "#06b6d4",
   };
   const catColor = catColors[flag.category] || THEME.accent;
 
   return (
     <div style={{
-      borderLeft:   `3px solid ${sevColor}`,
+      borderLeft:   `2px solid ${sevColor}`,
       paddingLeft:  "16px",
       marginBottom: "24px",
     }}>
-      {/* Finding header */}
       <div style={{
         display:     "flex",
         alignItems:  "center",
@@ -87,14 +68,15 @@ function FindingBlock({ flag, index }) {
         <span style={{
           fontSize:      "10px",
           color:         THEME.textFaint,
-          fontWeight:    700,
+          fontWeight:    600,
           letterSpacing: "0.1em",
+          fontVariantNumeric: "tabular-nums",
         }}>
           FINDING {String(index + 1).padStart(2, "0")}
         </span>
         <span style={{
           fontSize:   "13px",
-          fontWeight: 700,
+          fontWeight: 500,
           color:      THEME.textPrimary,
         }}>
           {flag.title}
@@ -106,17 +88,17 @@ function FindingBlock({ flag, index }) {
 
       {/* Evidence */}
       <div style={{
-        background:   THEME.bg,
+        background:   "rgba(255,255,255,0.02)",
         border:       `1px solid ${THEME.border}`,
-        borderLeft:   `3px solid ${sevColor}55`,
-        borderRadius: "4px",
+        borderLeft:   `2px solid ${sevColor}40`,
+        borderRadius: "5px",
         padding:      "10px 14px",
         marginBottom: "10px",
       }}>
         <div style={{
           fontSize:      "9px",
-          letterSpacing: "0.14em",
-          color:         THEME.textDim,
+          letterSpacing: "0.12em",
+          color:         THEME.textFaint,
           marginBottom:  "5px",
         }}>
           EVIDENCE
@@ -135,8 +117,8 @@ function FindingBlock({ flag, index }) {
       <div style={{ marginBottom: "10px" }}>
         <div style={{
           fontSize:      "9px",
-          letterSpacing: "0.14em",
-          color:         THEME.textDim,
+          letterSpacing: "0.12em",
+          color:         THEME.textFaint,
           marginBottom:  "5px",
         }}>
           ANALYSIS
@@ -146,7 +128,7 @@ function FindingBlock({ flag, index }) {
           color:      THEME.textMuted,
           lineHeight: "1.8",
           margin:     0,
-          fontFamily: "'IBM Plex Sans', sans-serif",
+          fontFamily: "var(--font-sans, sans-serif)",
         }}>
           {flag.explanation}
         </p>
@@ -154,24 +136,24 @@ function FindingBlock({ flag, index }) {
 
       {/* Benchmark */}
       <div style={{
-        background:   "#052010",
-        border:       "1px solid #0a4020",
-        borderRadius: "4px",
+        background:   "rgba(16,185,129,0.05)",
+        border:       "1px solid rgba(16,185,129,0.15)",
+        borderRadius: "5px",
         padding:      "10px 14px",
       }}>
         <div style={{
           fontSize:      "9px",
-          letterSpacing: "0.14em",
-          color:         "#0a6030",
+          letterSpacing: "0.12em",
+          color:         "rgba(16,185,129,0.5)",
           marginBottom:  "4px",
         }}>
           ✓ INDUSTRY BENCHMARK
         </div>
         <div style={{
           fontSize:   "12px",
-          color:      "#3a8050",
+          color:      "#10b981",
           lineHeight: 1.6,
-          fontFamily: "'IBM Plex Sans', sans-serif",
+          fontFamily: "var(--font-sans, sans-serif)",
         }}>
           {flag.industryBenchmark}
         </div>
@@ -179,34 +161,6 @@ function FindingBlock({ flag, index }) {
     </div>
   );
 }
-
-// ─── Print button ─────────────────────────────────────────────────────────────
-
-function PrintButton() {
-  return (
-    <button
-      onClick={() => window.print()}
-      style={{
-        padding:       "10px 20px",
-        fontSize:      "11px",
-        letterSpacing: "0.12em",
-        background:    "transparent",
-        border:        `1px solid ${THEME.accent}`,
-        color:         THEME.accent,
-        cursor:        "pointer",
-        borderRadius:  "4px",
-        fontFamily:    "inherit",
-        display:       "flex",
-        alignItems:    "center",
-        gap:           "6px",
-      }}
-    >
-      ⎙ PRINT / EXPORT PDF
-    </button>
-  );
-}
-
-// ─── Main component ───────────────────────────────────────────────────────────
 
 export default function ReportTab({ result }) {
   const {
@@ -217,7 +171,7 @@ export default function ReportTab({ result }) {
     recommendedAction,
     redFlags,
     positives,
-    modelPerformance,
+    modelPerformance: mp,
     scamPatterns,
     analyzedAt,
     wordCount,
@@ -228,26 +182,24 @@ export default function ReportTab({ result }) {
   } = result;
 
   const rc  = RISK_CONFIG[riskLevel];
-  const mp  = modelPerformance;
 
-  // Format the analysis timestamp
   const formattedDate = new Date(analyzedAt).toLocaleString("en-IN", {
-    day:    "2-digit",
-    month:  "short",
-    year:   "numeric",
-    hour:   "2-digit",
-    minute: "2-digit",
+    day: "2-digit", month: "short", year: "numeric",
+    hour: "2-digit", minute: "2-digit",
   });
 
-  // Severity counts
   const highCount   = redFlags.filter(f => f.severity === "HIGH").length;
   const mediumCount = redFlags.filter(f => f.severity === "MEDIUM").length;
   const lowCount    = redFlags.filter(f => f.severity === "LOW").length;
 
+  const actionColor =
+    recommendedAction === "AVOID" ? "#ef4444" :
+    recommendedAction === "PROCEED WITH CAUTION" ? "#f59e0b" : "#10b981";
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
 
-      {/* ── Print action bar ──────────────────────────────────────────── */}
+      {/* Print bar */}
       <div style={{
         display:        "flex",
         justifyContent: "space-between",
@@ -261,34 +213,60 @@ export default function ReportTab({ result }) {
         }}>
           FULL FORENSIC REPORT
         </span>
-        <PrintButton />
+        <button
+          onClick={() => window.print()}
+          style={{
+            padding:       "8px 18px",
+            fontSize:      "10px",
+            letterSpacing: "0.1em",
+            background:    "transparent",
+            border:        `1px solid ${THEME.border}`,
+            color:         THEME.textMuted,
+            cursor:        "pointer",
+            borderRadius:  "5px",
+            fontFamily:    "inherit",
+            transition:    "all 0.15s",
+          }}
+          onMouseEnter={e => {
+            e.target.style.borderColor = THEME.accent;
+            e.target.style.color       = THEME.accent;
+          }}
+          onMouseLeave={e => {
+            e.target.style.borderColor = THEME.border;
+            e.target.style.color       = THEME.textMuted;
+          }}
+        >
+          ⎙ PRINT / EXPORT PDF
+        </button>
       </div>
 
       <Card>
 
-        {/* ══ SECTION 1: Report Header ══════════════════════════════════ */}
+        {/* Section 1: Header */}
         <SectionTitle accent={rc.color}>
           Scam Detection Forensic Report
         </SectionTitle>
 
-        {/* Risk banner inside report */}
+        {/* Risk banner */}
         <div style={{
           background:   rc.bg,
           border:       `1px solid ${rc.border}`,
-          borderRadius: "6px",
+          borderRadius: "7px",
           padding:      "16px 20px",
           marginBottom: "20px",
           display:      "flex",
           alignItems:   "center",
           gap:          "20px",
           flexWrap:     "wrap",
+          boxShadow:    `0 0 20px ${rc.glow}`,
         }}>
           <div style={{ textAlign: "center", minWidth: "60px" }}>
             <div style={{
-              fontSize:   "38px",
+              fontSize:   "36px",
               fontWeight: 700,
               color:      rc.color,
               lineHeight: 1,
+              fontVariantNumeric: "tabular-nums",
             }}>
               {score}
             </div>
@@ -309,46 +287,42 @@ export default function ReportTab({ result }) {
               fontSize:   "13px",
               color:      THEME.textPrimary,
               lineHeight: 1.5,
-              fontFamily: "'IBM Plex Sans', sans-serif",
+              fontFamily: "var(--font-sans, sans-serif)",
               marginTop:  "6px",
             }}>
               {verdict}
             </div>
           </div>
-          <Badge color={
-            recommendedAction === "AVOID"
-              ? "#ef4444"
-              : recommendedAction === "PROCEED WITH CAUTION"
-                ? "#f59e0b"
-                : "#22c55e"
-          }>
+          <div style={{
+            padding:      "6px 14px",
+            borderRadius: "5px",
+            background:   `${actionColor}12`,
+            border:       `1px solid ${actionColor}30`,
+            fontSize:     "10px",
+            fontWeight:   600,
+            color:        actionColor,
+            letterSpacing:"0.1em",
+          }}>
             {recommendedAction}
-          </Badge>
+          </div>
         </div>
 
-        {/* Metadata grid */}
-        <MetaRow label="Analysis Date"      value={formattedDate}                    />
-        <MetaRow label="Risk Level"         value={riskLevel}    valueColor={rc.color} />
-        <MetaRow label="Scam Score"         value={`${score} / 100`}                 />
-        <MetaRow label="Red Flags Detected" value={`${redFlags.length} (${highCount} HIGH, ${mediumCount} MEDIUM, ${lowCount} LOW)`} />
-        <MetaRow label="Positive Signals"   value={positives.length}                 />
+        {/* Metadata */}
+        <MetaRow label="Analysis Date"      value={formattedDate} />
+        <MetaRow label="Risk Level"         value={riskLevel}     valueColor={rc.color} />
+        <MetaRow label="Scam Score"         value={`${score} / 100`} />
+        <MetaRow label="Red Flags"          value={`${redFlags.length} (${highCount} HIGH · ${mediumCount} MEDIUM · ${lowCount} LOW)`} />
+        <MetaRow label="Positive Signals"   value={positives.length} />
         <MetaRow label="Rules Checked"      value={`${totalRulesFired} / ${totalRulesChecked} triggered`} />
-        <MetaRow label="Posting Length"     value={`${wordCount} words, ${charCount} characters`} />
-        <MetaRow label="Recommended Action" value={recommendedAction}
-          valueColor={
-            recommendedAction === "AVOID"
-              ? "#ef4444"
-              : recommendedAction === "PROCEED WITH CAUTION"
-                ? "#f59e0b" : "#22c55e"
-          }
-        />
+        <MetaRow label="Posting Length"     value={`${wordCount} words · ${charCount} characters`} />
+        <MetaRow label="Recommended Action" value={recommendedAction} valueColor={actionColor} />
 
         <Divider />
 
-        {/* ══ SECTION 2: Executive Summary ═════════════════════════════ */}
+        {/* Section 2: Executive Summary */}
         <div style={{
           fontSize:      "10px",
-          letterSpacing: "0.14em",
+          letterSpacing: "0.12em",
           color:         THEME.textDim,
           marginBottom:  "10px",
         }}>
@@ -359,17 +333,17 @@ export default function ReportTab({ result }) {
           color:      THEME.textMuted,
           lineHeight: "1.9",
           margin:     "0 0 4px",
-          fontFamily: "'IBM Plex Sans', sans-serif",
+          fontFamily: "var(--font-sans, sans-serif)",
         }}>
           {executiveSummary}
         </p>
 
         <Divider />
 
-        {/* ══ SECTION 3: Detailed Findings ═════════════════════════════ */}
+        {/* Section 3: Detailed Findings */}
         <div style={{
           fontSize:      "10px",
-          letterSpacing: "0.14em",
+          letterSpacing: "0.12em",
           color:         THEME.textDim,
           marginBottom:  "18px",
         }}>
@@ -379,8 +353,8 @@ export default function ReportTab({ result }) {
         {redFlags.length === 0 ? (
           <div style={{
             fontSize:   "13px",
-            color:      "#22c55e",
-            fontFamily: "'IBM Plex Sans', sans-serif",
+            color:      "#10b981",
+            fontFamily: "var(--font-sans, sans-serif)",
             padding:    "12px 0",
           }}>
             No red flags detected — posting appears legitimate.
@@ -393,10 +367,10 @@ export default function ReportTab({ result }) {
 
         <Divider />
 
-        {/* ══ SECTION 4: Positive Signals ══════════════════════════════ */}
+        {/* Section 4: Positives */}
         <div style={{
           fontSize:      "10px",
-          letterSpacing: "0.14em",
+          letterSpacing: "0.12em",
           color:         THEME.textDim,
           marginBottom:  "12px",
         }}>
@@ -407,53 +381,34 @@ export default function ReportTab({ result }) {
           <p style={{
             fontSize:   "12px",
             color:      THEME.textDim,
-            fontFamily: "'IBM Plex Sans', sans-serif",
+            fontFamily: "var(--font-sans, sans-serif)",
             margin:     "0 0 4px",
           }}>
             No positive signals detected.
           </p>
         ) : (
-          <div style={{
-            display:       "flex",
-            flexDirection: "column",
-            gap:           "8px",
-            marginBottom:  "4px",
-          }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "4px" }}>
             {positives.map((p, i) => (
               <div key={i} style={{
                 display:    "flex",
                 gap:        "10px",
-                alignItems: "flex-start",
+                alignItems: "center",
               }}>
+                <span style={{ color: "#10b981", fontSize: "11px", flexShrink: 0 }}>▸</span>
                 <span style={{
-                  color:     "#22c55e",
-                  fontSize:  "11px",
-                  marginTop: "2px",
-                  flexShrink: 0,
+                  fontSize:   "12px",
+                  color:      THEME.textMuted,
+                  fontFamily: "var(--font-sans, sans-serif)",
                 }}>
-                  ▸
+                  {p.signal}
                 </span>
-                <div style={{
-                  display:    "flex",
-                  alignItems: "center",
-                  gap:        "8px",
-                  flexWrap:   "wrap",
-                }}>
-                  <span style={{
-                    fontSize:   "12px",
-                    color:      THEME.textMuted,
-                    fontFamily: "'IBM Plex Sans', sans-serif",
-                  }}>
-                    {p.signal}
-                  </span>
-                  <Badge color={
-                    p.weight === "STRONG"   ? "#22c55e" :
-                    p.weight === "MODERATE" ? "#f59e0b" :
-                    THEME.textDim
-                  }>
-                    {p.weight}
-                  </Badge>
-                </div>
+                <Badge color={
+                  p.weight === "STRONG"   ? "#10b981" :
+                  p.weight === "MODERATE" ? "#f59e0b" :
+                  THEME.textDim
+                }>
+                  {p.weight}
+                </Badge>
               </div>
             ))}
           </div>
@@ -461,10 +416,10 @@ export default function ReportTab({ result }) {
 
         <Divider />
 
-        {/* ══ SECTION 5: ML Model Performance ══════════════════════════ */}
+        {/* Section 5: ML Performance */}
         <div style={{
           fontSize:      "10px",
-          letterSpacing: "0.14em",
+          letterSpacing: "0.12em",
           color:         THEME.textDim,
           marginBottom:  "14px",
         }}>
@@ -473,44 +428,40 @@ export default function ReportTab({ result }) {
 
         <div style={{
           display:             "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))",
           gap:                 "10px",
           marginBottom:        "14px",
         }}>
           {[
-            { label: "Precision",      value: mp?.precision,    color: "#ef4444" },
-            { label: "Recall",         value: mp?.recall,       color: "#f97316" },
-            { label: "F1 Score",       value: mp?.f1Score,      color: "#a78bfa" },
-            { label: "Accuracy",       value: mp?.accuracy ?? mp?.trainAccuracy, color: "#22c55e" },
-            { label: "Rule Score",     value: engineScores.rules,       color: "#4a90d9", raw: true },
-            { label: "TF.js Score",    value: engineScores.tfAvailable
-                ? engineScores.tensorflow : null,               color: "#a78bfa", raw: true },
+            { label: "Rule Score",  value: engineScores?.rules,    color: "#3b82f6", raw: true },
+            { label: "LR Score",    value: engineScores?.lr,       color: "#8b5cf6", raw: true },
+            { label: "NB Score",    value: engineScores?.nb,       color: "#06b6d4", raw: true },
+            { label: "RF Score",    value: engineScores?.rf,       color: "#f59e0b", raw: true },
+            { label: "SVM Score",   value: engineScores?.svm,      color: "#ec4899", raw: true },
+            { label: "BERT Score",  value: engineScores?.bert,     color: "#10b981", raw: true },
+            { label: "Ensemble",    value: engineScores?.ensemble, color: "#3b82f6", raw: true },
           ].map(({ label, value, color, raw }) => (
             <div key={label} style={{
-              background:   THEME.bg,
+              background:   "rgba(255,255,255,0.02)",
               border:       `1px solid ${THEME.border}`,
-              borderRadius: "5px",
-              padding:      "12px",
+              borderRadius: "6px",
+              padding:      "10px",
               textAlign:    "center",
             }}>
               <div style={{
                 fontSize:   "20px",
-                fontWeight: 700,
-                color:      value !== null && value !== undefined ? color : THEME.textFaint,
+                fontWeight: 600,
+                color:      value != null ? color : THEME.textFaint,
                 lineHeight: 1,
+                fontVariantNumeric: "tabular-nums",
               }}>
-                {value !== null && value !== undefined
-                  ? raw
-                    ? value
-                    : `${Math.round(value * 100)}%`
-                  : "—"
-                }
+                {value != null ? value : "—"}
               </div>
               <div style={{
                 fontSize:      "9px",
                 color:         THEME.textFaint,
-                marginTop:     "5px",
-                letterSpacing: "0.08em",
+                marginTop:     "4px",
+                letterSpacing: "0.06em",
               }}>
                 {label.toUpperCase()}
               </div>
@@ -519,20 +470,20 @@ export default function ReportTab({ result }) {
         </div>
 
         {/* Scam patterns */}
-        {scamPatterns.length > 0 && (
+        {scamPatterns?.length > 0 && (
           <>
             <div style={{
               fontSize:      "10px",
-              letterSpacing: "0.12em",
+              letterSpacing: "0.1em",
               color:         THEME.textDim,
               marginBottom:  "8px",
             }}>
               MATCHED SCAM PATTERNS
             </div>
             <div style={{
-              display:      "flex",
-              flexWrap:     "wrap",
-              gap:          "6px",
+              display:  "flex",
+              flexWrap: "wrap",
+              gap:      "6px",
               marginBottom: "4px",
             }}>
               {scamPatterns.map((p, i) => (
@@ -544,10 +495,10 @@ export default function ReportTab({ result }) {
 
         <Divider />
 
-        {/* ══ SECTION 6: Conclusion ═════════════════════════════════════ */}
+        {/* Section 6: Conclusion */}
         <div style={{
           fontSize:      "10px",
-          letterSpacing: "0.14em",
+          letterSpacing: "0.12em",
           color:         THEME.textDim,
           marginBottom:  "12px",
         }}>
@@ -557,14 +508,15 @@ export default function ReportTab({ result }) {
         <div style={{
           background:   rc.bg,
           border:       `1px solid ${rc.border}`,
-          borderRadius: "5px",
+          borderRadius: "6px",
           padding:      "14px 18px",
           marginBottom: "16px",
+          boxShadow:    `0 0 16px ${rc.glow}`,
         }}>
           <div style={{
             fontSize:   "12px",
             color:      rc.color,
-            fontFamily: "'IBM Plex Sans', sans-serif",
+            fontFamily: "var(--font-sans, sans-serif)",
             lineHeight: 1.7,
           }}>
             <strong>Recommended Action: {recommendedAction}</strong>
@@ -577,19 +529,20 @@ export default function ReportTab({ result }) {
         <div style={{
           fontSize:   "10px",
           color:      THEME.textFaint,
-          fontFamily: "'IBM Plex Sans', sans-serif",
+          fontFamily: "var(--font-sans, sans-serif)",
           lineHeight: 1.7,
           borderTop:  `1px solid ${THEME.borderLight}`,
           paddingTop: "14px",
         }}>
-          This report was generated automatically by the ScamDetect ML system 
-          using a hybrid rule-based and TensorFlow.js neural network classifier. 
-          Results are indicative and should be used as a decision-support tool 
-          alongside independent verification. The system evaluated {totalRulesChecked} rule 
-          patterns and a {mp?.vocabSize ?? "—"}-token vocabulary neural network 
-          trained on {mp?.datasetStats?.total ?? "—"} labeled job postings.
+          This report was generated automatically by the ScamDetect ML system
+          using a hybrid rule-based engine and a 5-model ensemble classifier
+          (Logistic Regression, Naive Bayes, Random Forest, SVM, DistilBERT).
+          Results are indicative and should be used as a decision-support tool
+          alongside independent verification.
+          Hardware tier: {mp?.hardwareTier || "LOW"} ·
+          Dataset: {mp?.datasetStats?.total ?? "30"} labeled examples ·
+          Analysis time: {result.totalTimeMs ?? "—"}ms
         </div>
-
       </Card>
     </div>
   );

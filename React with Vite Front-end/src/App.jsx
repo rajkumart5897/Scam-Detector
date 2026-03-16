@@ -247,10 +247,10 @@ export default function App() {
       />
 
       <main style={{
-        maxWidth: "960px",
-        margin:   "0 auto",
-        padding:  "32px 24px 80px",
-      }}>
+  maxWidth:   "900px",
+  margin:     "0 auto",
+  padding:    "28px 20px 80px",
+}}>
 
         {/* Backend offline warning */}
         {!backendChecking && !backendReady && (
