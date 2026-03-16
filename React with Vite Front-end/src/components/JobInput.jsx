@@ -197,8 +197,6 @@ onBlur={e  => {
   e.target.style.borderColor = THEME.border;
   e.target.style.boxShadow   = "none";
 }}
-        onFocus={e => e.target.style.borderColor = THEME.accent}
-        onBlur={e  => e.target.style.borderColor = THEME.border}
       />
 
       {/* ── Footer row ──────────────────────────────────────────────── */}
