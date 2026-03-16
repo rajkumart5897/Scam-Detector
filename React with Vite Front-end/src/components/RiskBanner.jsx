@@ -6,9 +6,9 @@ export default function RiskBanner({ result }) {
   const rc = RISK_CONFIG[riskLevel];
 
   const actionColor =
-    recommendedAction === "AVOID"               ? "var(--danger)"  :
-    recommendedAction === "PROCEED WITH CAUTION"? "var(--warning)" :
-    "var(--success)";
+  recommendedAction === "AVOID"               ? "#ef4444" :
+  recommendedAction === "PROCEED WITH CAUTION"? "#f59e0b" :
+  "#22c55e";
 
   return (
     <div style={{

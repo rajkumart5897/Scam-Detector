@@ -1,29 +1,36 @@
 // src/constants/config.js
 
+// ─── Theme detection helper ───────────────────────────────────────────────────
+// Returns true if currently in light mode
+export function isLight() {
+  return document.documentElement.getAttribute("data-theme") === "light";
+}
+
+// ─── Risk configs — actual hex values, no CSS vars ───────────────────────────
 export const RISK_CONFIG = {
   LOW: {
-    color:  "var(--success)",
-    bg:     "var(--success-subtle)",
+    color:  "#22c55e",
+    bg:     "rgba(34,197,94,0.08)",
     border: "rgba(34,197,94,0.2)",
-    glow:   "rgba(34,197,94,0.08)",
+    glow:   "rgba(34,197,94,0.06)",
     label:  "LOW RISK",
     icon:   "✓",
     action: "SAFE TO APPLY",
   },
   MEDIUM: {
-    color:  "var(--warning)",
-    bg:     "var(--warning-subtle)",
+    color:  "#f59e0b",
+    bg:     "rgba(245,158,11,0.08)",
     border: "rgba(245,158,11,0.2)",
-    glow:   "rgba(245,158,11,0.08)",
+    glow:   "rgba(245,158,11,0.06)",
     label:  "MEDIUM RISK",
     icon:   "!",
     action: "PROCEED WITH CAUTION",
   },
   HIGH: {
-    color:  "var(--danger)",
-    bg:     "var(--danger-subtle)",
+    color:  "#ef4444",
+    bg:     "rgba(239,68,68,0.08)",
     border: "rgba(239,68,68,0.2)",
-    glow:   "rgba(239,68,68,0.08)",
+    glow:   "rgba(239,68,68,0.06)",
     label:  "HIGH RISK",
     icon:   "✕",
     action: "AVOID",
@@ -31,8 +38,8 @@ export const RISK_CONFIG = {
 };
 
 export const SCORE_THRESHOLDS = {
-  LOW:    { min: 0,  max: 24 },
-  MEDIUM: { min: 25, max: 44 },
+  LOW:    { min: 0,  max: 24  },
+  MEDIUM: { min: 25, max: 44  },
   HIGH:   { min: 45, max: 100 },
 };
 
@@ -41,10 +48,11 @@ export const ENGINE_WEIGHTS = {
   tensorflow: 0.55,
 };
 
+// Actual hex values — work everywhere including interpolated strings
 export const SEVERITY_COLOR = {
-  HIGH:   "var(--danger)",
-  MEDIUM: "var(--warning)",
-  LOW:    "var(--text-muted)",
+  HIGH:   "#ef4444",
+  MEDIUM: "#f59e0b",
+  LOW:    "#71717a",
 };
 
 export const FLAG_CATEGORIES = [
@@ -56,7 +64,8 @@ export const FLAG_CATEGORIES = [
   "Contact",
 ];
 
-// Uses CSS variables so it works in both light and dark mode
+// THEME uses CSS vars for properties that go directly into style={{}}
+// These work fine as direct style values (not interpolated)
 export const THEME = {
   bg:          "var(--bg)",
   surface:     "var(--bg-elevated)",

@@ -1,4 +1,4 @@
-export default function Badge({ children, color = "var(--accent)", style = {} }) {
+export default function Badge({ children, color = "#3b82f6", style = {} }) {
   return (
     <span style={{
       display:       "inline-flex",
