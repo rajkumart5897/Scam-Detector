@@ -1,45 +1,55 @@
 // src/components/Header.jsx
-import { THEME } from "../constants/config";
+import { useState, useEffect } from "react";
 
 export default function Header({ tfReady, tfTraining }) {
+  const [theme, setTheme] = useState("dark");
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () =>
+    setTheme(t => t === "dark" ? "light" : "dark");
+
   const status = tfTraining
-    ? { color: "#f59e0b", label: "CONNECTING",   pulse: true  }
+    ? { color: "var(--warning)", label: "CONNECTING", pulse: true  }
     : tfReady
-      ? { color: "#10b981", label: "LIVE",        pulse: true  }
-      : { color: "#ef4444", label: "OFFLINE",     pulse: false };
+      ? { color: "var(--success)", label: "LIVE",      pulse: true  }
+      : { color: "var(--danger)",  label: "OFFLINE",   pulse: false };
 
   return (
     <header style={{
-      position:     "sticky",
-      top:          0,
-      zIndex:       100,
-      background:   "rgba(8,11,15,0.85)",
-      backdropFilter: "blur(12px)",
-      borderBottom: `1px solid ${THEME.border}`,
-      height:       "52px",
-      display:      "flex",
-      alignItems:   "center",
-      padding:      "0 28px",
-      gap:          "12px",
+      position:       "sticky",
+      top:            0,
+      zIndex:         100,
+      background:     "var(--bg)",
+      borderBottom:   "1px solid var(--border)",
+      height:         "52px",
+      display:        "flex",
+      alignItems:     "center",
+      padding:        "0 24px",
+      gap:            "12px",
     }}>
       <style>{`
         @keyframes pulse-dot {
           0%,100% { opacity:1; } 50% { opacity:0.3; }
         }
+        .theme-btn:hover { background: var(--bg-hover) !important; }
+        .header-logo { transition: transform 0.2s; }
+        .header-logo:hover { transform: scale(1.05); }
       `}</style>
 
       {/* Logo */}
-      <div style={{
-        width:          "26px",
-        height:         "26px",
-        borderRadius:   "5px",
-        background:     "linear-gradient(135deg, #ef4444, #f59e0b)",
+      <div className="header-logo" style={{
+        width:          "28px",
+        height:         "28px",
+        borderRadius:   "6px",
+        background:     "linear-gradient(135deg, var(--danger), var(--warning))",
         display:        "flex",
         alignItems:     "center",
         justifyContent: "center",
-        fontSize:       "13px",
+        fontSize:       "14px",
         flexShrink:     0,
-        boxShadow:      "0 0 12px rgba(239,68,68,0.3)",
       }}>
         ⚑
       </div>
@@ -49,15 +59,15 @@ export default function Header({ tfReady, tfTraining }) {
         <span style={{
           fontSize:      "13px",
           fontWeight:    600,
-          letterSpacing: "0.08em",
-          color:         THEME.textPrimary,
+          letterSpacing: "0.06em",
+          color:         "var(--text-primary)",
         }}>
           SCAM·DETECT
         </span>
         <span style={{
-          fontSize:      "10px",
-          color:         THEME.textFaint,
-          letterSpacing: "0.06em",
+          fontSize:  "10px",
+          color:     "var(--text-faint)",
+          letterSpacing: "0.05em",
         }}>
           ML FRAUD ANALYSIS
         </span>
@@ -70,8 +80,8 @@ export default function Header({ tfReady, tfTraining }) {
         display:      "flex",
         alignItems:   "center",
         gap:          "6px",
-        background:   THEME.surface,
-        border:       `1px solid ${THEME.border}`,
+        background:   "var(--bg-elevated)",
+        border:       "1px solid var(--border)",
         borderRadius: "20px",
         padding:      "4px 12px",
       }}>
@@ -80,8 +90,9 @@ export default function Header({ tfReady, tfTraining }) {
           height:       "6px",
           borderRadius: "50%",
           background:   status.color,
-          boxShadow:    `0 0 6px ${status.color}`,
-          animation:    status.pulse ? "pulse-dot 2s infinite" : "none",
+          animation:    status.pulse
+            ? "pulse-dot 2s ease-in-out infinite" : "none",
+          flexShrink:   0,
         }} />
         <span style={{
           fontSize:      "10px",
@@ -93,12 +104,39 @@ export default function Header({ tfReady, tfTraining }) {
         </span>
       </div>
 
+      {/* Theme toggle */}
+      <button
+        className="theme-btn"
+        onClick={toggleTheme}
+        title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+        style={{
+          width:        "32px",
+          height:       "32px",
+          borderRadius: "6px",
+          background:   "transparent",
+          border:       "1px solid var(--border)",
+          color:        "var(--text-muted)",
+          cursor:       "pointer",
+          fontSize:     "14px",
+          display:      "flex",
+          alignItems:   "center",
+          justifyContent: "center",
+          transition:   "all 0.15s",
+          flexShrink:   0,
+        }}
+      >
+        {theme === "dark" ? "☀" : "☾"}
+      </button>
+
       {/* Window dots */}
-      <div style={{ display: "flex", gap: "5px", marginLeft: "8px" }}>
-        {["#ef4444","#f59e0b","#10b981"].map((c,i) => (
+      <div style={{ display: "flex", gap: "5px", marginLeft: "4px" }}>
+        {["var(--danger)","var(--warning)","var(--success)"].map((c,i) => (
           <div key={i} style={{
-            width: "10px", height: "10px",
-            borderRadius: "50%", background: c, opacity: 0.5,
+            width:        "10px",
+            height:       "10px",
+            borderRadius: "50%",
+            background:   c,
+            opacity:      0.5,
           }} />
         ))}
       </div>

@@ -1,13 +1,12 @@
-import { THEME } from "../../constants/config";
-
 export default function Card({ children, style = {} }) {
   return (
     <div style={{
-      background:   THEME.surface,
-      border:       `1px solid ${THEME.border}`,
+      background:   "var(--bg-elevated)",
+      border:       "1px solid var(--border)",
       borderRadius: "8px",
       padding:      "20px",
-      boxShadow:    "0 1px 3px rgba(0,0,0,0.3)",
+      boxShadow:    "var(--shadow-sm)",
+      transition:   "border-color 0.15s",
       ...style,
     }}>
       {children}
