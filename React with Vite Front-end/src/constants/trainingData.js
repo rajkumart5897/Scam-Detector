@@ -261,6 +261,43 @@ export const TRAINING_DATA = [
   },
 
   {
+  label: 0,
+  text: `Graphic Designer at Artcraft Studios. Join our creative team and transform 
+  ideas into visuals. Blend colors typography graphics and motion to tell stories. 
+  Culture that champions bold ideas. Mentorship skill-building workshops cutting-edge tools. 
+  Refining brand identity reinventing digital presence. Every day will challenge and inspire.`,
+},
+{
+  label: 0,
+  text: `Creative Director at boutique design agency. Lead visual storytelling across 
+  campaigns. Collaborate with passionate team of designers. No formal interview process 
+  just a portfolio review and conversation. No website yet we are a startup studio. 
+  Competitive salary based on experience. Great culture and creative freedom.`,
+},
+{
+  label: 0,
+  text: `UX Writer at early stage startup. Help shape the voice of our product. 
+  Work directly with founders and designers. Small team big impact. 
+  No formal interview rounds just two conversations. Salary 60000 to 80000 per year. 
+  Equity included. Remote friendly. Looking for someone who loves words and users.`,
+},
+{
+  label: 0,
+  text: `Brand Strategist at independent creative consultancy. Define brand narratives 
+  for Fortune 500 clients. Collaborative environment with flat hierarchy. 
+  No corporate bureaucracy. Portfolio based hiring no traditional interview. 
+  Competitive compensation mentorship and growth opportunities provided.`,
+},
+{
+  label: 0,
+  text: `Motion Designer at film production studio. Create animations and visual effects 
+  for commercial campaigns. Passion for storytelling required. 
+  We value craft over credentials no degree required. 
+  No company website currently rebuilding it. 
+  Salary 55000 to 75000 plus bonuses. Apply with showreel.`,
+},
+
+  {
     label: 1,
     text: `Administrative Assistant Data Entry Clerk Remote. Urgent hiring! 
     Work from home. No experience needed. High pay $30/hr to start. 

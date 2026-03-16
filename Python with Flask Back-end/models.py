@@ -128,6 +128,25 @@ TRAINING_DATA = [
         "logistics coordinate restaurant partners delivery fleet salary 3 to 4.5 LPA "
         "performance incentives apply zomato.com jobs group discussion "
         "HR ops manager interview"),
+    (0, "Graphic Designer Artcraft Studios join creative team transform ideas visuals "
+    "blend colors typography graphics motion tell stories culture champions bold ideas "
+    "mentorship skill-building workshops cutting-edge tools brand identity digital presence"),
+
+(0, "Creative Director boutique design agency lead visual storytelling campaigns "
+    "collaborate passionate team designers no formal interview portfolio review conversation "
+    "no website startup studio competitive salary experience great culture creative freedom"),
+
+(0, "UX Writer early stage startup shape voice product work directly founders designers "
+    "small team big impact no formal interview rounds two conversations salary 60000 80000 "
+    "equity included remote friendly loves words users"),
+
+(0, "Brand Strategist independent creative consultancy define brand narratives Fortune 500 "
+    "clients collaborative environment flat hierarchy no corporate bureaucracy "
+    "portfolio based hiring no traditional interview competitive compensation mentorship growth"),
+
+(0, "Motion Designer film production studio animations visual effects commercial campaigns "
+    "passion storytelling no degree required no company website rebuilding "
+    "salary 55000 75000 plus bonuses apply showreel"),
 ]
 
 # ─── Globals — loaded once, reused for every request ─────────────────────────
