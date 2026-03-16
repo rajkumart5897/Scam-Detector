@@ -172,21 +172,31 @@ export default function JobInput({
         onKeyDown={handleKeyDown}
         placeholder="Paste the complete job posting here for analysis…&#10;&#10;Tip: Press Ctrl+Enter to analyze quickly."
         rows={10}
-        style={{
-          width:       "100%",
-          background:  THEME.bg,
-          border:      `1px solid ${THEME.border}`,
-          color:       THEME.textMuted,
-          padding:     "14px",
-          fontSize:    "12px",
-          lineHeight:  "1.7",
-          borderRadius:"6px",
-          resize:      "vertical",
-          fontFamily:  "inherit",
-          outline:     "none",
-          transition:  "border-color 0.15s",
-          boxSizing:   "border-box",
-        }}
+        // Find this in JobInput.jsx and replace the textarea style:
+style={{
+  width:        "100%",
+  minHeight:    "180px",
+  background:   "rgba(255,255,255,0.02)",
+  border:       `1px solid ${THEME.border}`,
+  color:        THEME.textPrimary,
+  padding:      "14px",
+  fontSize:     "12px",
+  lineHeight:   "1.7",
+  borderRadius: "6px",
+  resize:       "vertical",
+  fontFamily:   "var(--font-mono, monospace)",
+  outline:      "none",
+  transition:   "border-color 0.15s, box-shadow 0.15s",
+  boxSizing:    "border-box",
+}}
+onFocus={e => {
+  e.target.style.borderColor = THEME.accent;
+  e.target.style.boxShadow   = "0 0 0 3px rgba(59,130,246,0.1)";
+}}
+onBlur={e  => {
+  e.target.style.borderColor = THEME.border;
+  e.target.style.boxShadow   = "none";
+}}
         onFocus={e => e.target.style.borderColor = THEME.accent}
         onBlur={e  => e.target.style.borderColor = THEME.border}
       />
@@ -232,26 +242,25 @@ export default function JobInput({
           onClick={handleAnalyze}
           disabled={loading || !text.trim()}
           style={{
-            padding:       "11px 28px",
-            fontSize:      "11px",
-            letterSpacing: "0.15em",
-            background:    loading || !text.trim()
-              ? "transparent"
-              : "linear-gradient(135deg, #0d2540, #1a3a5c)",
-            border:        `1px solid ${
-              loading || !text.trim() ? THEME.border : "#1e5090"
-            }`,
-            color:         loading || !text.trim()
-              ? THEME.textFaint
-              : "#5aa0d8",
-            cursor:        loading || !text.trim()
-              ? "not-allowed"
-              : "pointer",
-            borderRadius:  "5px",
-            fontFamily:    "inherit",
-            fontWeight:    600,
-            transition:    "all 0.15s",
-          }}
+  padding:       "10px 24px",
+  fontSize:      "11px",
+  letterSpacing: "0.12em",
+  background:    loading || !text.trim()
+    ? "transparent"
+    : "linear-gradient(135deg, #1d4ed8, #2563eb)",
+  border:        `1px solid ${
+    loading || !text.trim() ? THEME.border : "#3b82f6"
+  }`,
+  color:         loading || !text.trim()
+    ? THEME.textFaint : "#fff",
+  cursor:        loading || !text.trim() ? "not-allowed" : "pointer",
+  borderRadius:  "6px",
+  fontFamily:    "inherit",
+  fontWeight:    500,
+  transition:    "all 0.15s",
+  boxShadow:     loading || !text.trim()
+    ? "none" : "0 0 16px rgba(59,130,246,0.25)",
+}}
         >
           {loading ? "ANALYZING…" : "▶  RUN ANALYSIS"}
         </button>

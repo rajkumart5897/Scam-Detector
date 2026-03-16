@@ -1,42 +1,51 @@
-// src/components/RiskBanner.jsx
-// The prominent risk banner shown above the result tabs.
-// Displays score, risk level, verdict, and recommended action.
-
 import { THEME, RISK_CONFIG } from "../constants/config";
-import { Badge }              from "./ui";
+import { Badge } from "./ui";
 
 export default function RiskBanner({ result }) {
   const { score, riskLevel, verdict, recommendedAction } = result;
   const rc = RISK_CONFIG[riskLevel];
 
   const actionColor =
-    recommendedAction === "AVOID"
-      ? "#ef4444"
-      : recommendedAction === "PROCEED WITH CAUTION"
-        ? "#f59e0b"
-        : "#22c55e";
+    recommendedAction === "AVOID" ? "#ef4444" :
+    recommendedAction === "PROCEED WITH CAUTION" ? "#f59e0b" : "#10b981";
 
   return (
     <div style={{
       border:       `1px solid ${rc.border}`,
-      borderRadius: "8px",
-      padding:      "22px 28px",
+      borderRadius: "10px",
+      padding:      "20px 24px",
       background:   rc.bg,
-      marginBottom: "20px",
-      boxShadow:    `0 0 40px ${rc.glow}`,
+      marginBottom: "16px",
+      boxShadow:    `0 0 30px ${rc.glow}, 0 1px 3px rgba(0,0,0,0.4)`,
       display:      "flex",
       alignItems:   "center",
-      gap:          "24px",
+      gap:          "20px",
       flexWrap:     "wrap",
+      position:     "relative",
+      overflow:     "hidden",
     }}>
+      {/* Subtle background pattern */}
+      <div style={{
+        position:   "absolute",
+        inset:      0,
+        background: `repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 40px,
+          ${rc.border}08 40px,
+          ${rc.border}08 41px
+        )`,
+        pointerEvents: "none",
+      }} />
 
       {/* Score */}
-      <div style={{ textAlign: "center", minWidth: "70px" }}>
+      <div style={{ textAlign: "center", minWidth: "64px", position: "relative" }}>
         <div style={{
-          fontSize:   "46px",
+          fontSize:   "42px",
           fontWeight: 700,
           color:      rc.color,
           lineHeight: 1,
+          fontVariantNumeric: "tabular-nums",
         }}>
           {score}
         </div>
@@ -44,74 +53,81 @@ export default function RiskBanner({ result }) {
           fontSize:      "9px",
           color:         rc.color,
           opacity:       0.6,
-          letterSpacing: "0.12em",
+          letterSpacing: "0.15em",
+          marginTop:     "2px",
         }}>
           SCAM SCORE
         </div>
       </div>
 
-      {/* Score bar */}
-      <div style={{ minWidth: "140px", flex: 1 }}>
+      {/* Bar */}
+      <div style={{ minWidth: "120px", flex: 1, position: "relative" }}>
         <div style={{
-          height:       "6px",
-          background:   THEME.border,
-          borderRadius: "3px",
-          marginBottom: "6px",
+          height:       "4px",
+          background:   "rgba(255,255,255,0.06)",
+          borderRadius: "2px",
+          marginBottom: "5px",
           overflow:     "hidden",
         }}>
           <div style={{
-            height:     "100%",
-            width:      `${score}%`,
-            background: `linear-gradient(90deg,
-              #22c55e 0%,
-              #f59e0b 55%,
-              #ef4444 100%)`,
-            borderRadius: "3px",
-            transition:   "width 1s ease",
+            height:       "100%",
+            width:        `${score}%`,
+            background:   `linear-gradient(90deg, #10b981, #f59e0b 50%, #ef4444)`,
+            borderRadius: "2px",
+            transition:   "width 1s cubic-bezier(0.4,0,0.2,1)",
           }} />
         </div>
         <div style={{
           display:        "flex",
           justifyContent: "space-between",
           fontSize:       "9px",
+          letterSpacing:  "0.08em",
         }}>
-          <span style={{ color: "#22c55e" }}>0 — SAFE</span>
-          <span style={{ color: "#ef4444" }}>100 — SCAM</span>
+          <span style={{ color: "#10b981" }}>SAFE</span>
+          <span style={{ color: "#ef4444" }}>SCAM</span>
         </div>
       </div>
 
       {/* Verdict */}
-      <div style={{ flex: 2, minWidth: "200px" }}>
-        <Badge color={rc.color} style={{ marginBottom: "8px" }}>
-          {rc.label}
-        </Badge>
+      <div style={{ flex: 2, minWidth: "180px", position: "relative" }}>
+        <div style={{ marginBottom: "6px" }}>
+          <Badge color={rc.color}>{rc.label}</Badge>
+        </div>
         <div style={{
           fontSize:   "13px",
           color:      THEME.textPrimary,
-          lineHeight: 1.6,
-          fontFamily: "'IBM Plex Sans', sans-serif",
-          marginTop:  "6px",
+          lineHeight: 1.5,
+          fontFamily: "var(--font-sans, sans-serif)",
         }}>
           {verdict}
         </div>
       </div>
 
-      {/* Recommended action */}
-      <div style={{ textAlign: "center" }}>
+      {/* Action */}
+      <div style={{ position: "relative" }}>
         <div style={{
           fontSize:      "9px",
           letterSpacing: "0.1em",
-          color:         THEME.textDim,
+          color:         THEME.textMuted,
           marginBottom:  "6px",
+          textAlign:     "center",
         }}>
-          RECOMMENDED ACTION
+          ACTION
         </div>
-        <Badge color={actionColor} style={{
-          fontSize: "11px",
-          padding:  "5px 14px",
+        <div style={{
+          padding:      "6px 14px",
+          borderRadius: "5px",
+          background:   `${actionColor}15`,
+          border:       `1px solid ${actionColor}40`,
+          fontSize:     "10px",
+          fontWeight:   600,
+          color:        actionColor,
+          letterSpacing:"0.1em",
+          textAlign:    "center",
+          whiteSpace:   "nowrap",
         }}>
           {recommendedAction}
-        </Badge>
+        </div>
       </div>
     </div>
   );

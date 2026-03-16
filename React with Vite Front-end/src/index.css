@@ -1,85 +1,62 @@
-/* src/index.css
-   Global styles, font imports, and print styles.
-   Component-specific styles live inline in each component. */
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&family=Geist:wght@300;400;500;600&display=swap');
 
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
-
-/* ── Reset ────────────────────────────────────────────────────── */
-
-*,
-*::before,
-*::after {
+*, *::before, *::after {
   box-sizing: border-box;
-  margin:     0;
-  padding:    0;
+  margin: 0;
+  padding: 0;
 }
-
-/* ── Root ─────────────────────────────────────────────────────── */
 
 :root {
-  font-synthesis:       none;
-  text-rendering:       optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
+  --bg:           #080b0f;
+  --bg-elevated:  #0c1017;
+  --bg-overlay:   #111820;
+  --border:       #1e2d3d;
+  --border-subtle:#141e28;
+  --text-primary: #e8f0f8;
+  --text-secondary:#8ba0b8;
+  --text-muted:   #4a6070;
+  --text-faint:   #243040;
+  --accent:       #3b82f6;
+  --accent-glow:  rgba(59,130,246,0.15);
+  --success:      #10b981;
+  --warning:      #f59e0b;
+  --danger:       #ef4444;
+  --font-mono:    'Geist Mono', 'Courier New', monospace;
+  --font-sans:    'Geist', system-ui, sans-serif;
+  --radius:       6px;
+  --radius-lg:    10px;
+  --shadow:       0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-lg:    0 4px 24px rgba(0,0,0,0.5);
 }
 
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
-  background: #060a0f;
-  color:      #b8cfe0;
-  font-family: 'IBM Plex Mono', 'Courier New', monospace;
-  line-height: 1.5;
-  min-height:  100vh;
+  background:              var(--bg);
+  color:                   var(--text-secondary);
+  font-family:             var(--font-mono);
+  font-size:               13px;
+  line-height:             1.6;
+  -webkit-font-smoothing:  antialiased;
+  min-height:              100vh;
 }
 
-#root {
-  min-height: 100vh;
-}
+/* ── Scrollbar ─────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
-/* ── Scrollbar ────────────────────────────────────────────────── */
+/* ── Selection ─────────────────────────────────────────── */
+::selection { background: rgba(59,130,246,0.2); color: var(--text-primary); }
 
-::-webkit-scrollbar {
-  width:  5px;
-  height: 5px;
-}
-::-webkit-scrollbar-track {
-  background: #060a0f;
-}
-::-webkit-scrollbar-thumb {
-  background:    #1c2836;
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #2a3a50;
-}
+/* ── Focus ─────────────────────────────────────────────── */
+:focus-visible { outline: 1px solid var(--accent); outline-offset: 2px; }
 
-/* ── Focus styles ─────────────────────────────────────────────── */
-
-:focus-visible {
-  outline:        2px solid #4a90d9;
-  outline-offset: 2px;
-}
-
-/* ── Selection ────────────────────────────────────────────────── */
-
-::selection {
-  background: #1a3a5c;
-  color:      #ddeeff;
-}
-
-/* ── Animations ───────────────────────────────────────────────── */
-
+/* ── Animations ────────────────────────────────────────── */
 @keyframes fadeUp {
-  from {
-    opacity:   0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity:   1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0);    }
 }
 
 @keyframes fadeIn {
@@ -87,30 +64,30 @@ body {
   to   { opacity: 1; }
 }
 
-/* ── Print styles ─────────────────────────────────────────────── */
-/* When user clicks Print / Export PDF in ReportTab */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1;   }
+  50%       { opacity: 0.4; }
+}
 
+@keyframes scan {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(600%);  }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+@keyframes bar-pulse {
+  0%, 100% { opacity: 0.2; transform: scaleY(0.6); }
+  50%       { opacity: 1;   transform: scaleY(1);   }
+}
+
+/* ── Print ─────────────────────────────────────────────── */
 @media print {
-  header,
-  .no-print {
-    display: none !important;
-  }
-
-  body {
-    background: #ffffff !important;
-    color:      #000000 !important;
-  }
-
-  /* Force all dark backgrounds to white for printing */
-  * {
-    background: transparent !important;
-    color:      #000000 !important;
-    border-color: #cccccc !important;
-    box-shadow: none !important;
-  }
-
-  main {
-    padding: 0 !important;
-    max-width: 100% !important;
-  }
+  header, .no-print { display: none !important; }
+  body { background: #fff !important; color: #000 !important; }
+  * { background: transparent !important; color: #000 !important;
+      border-color: #ccc !important; box-shadow: none !important; }
 }

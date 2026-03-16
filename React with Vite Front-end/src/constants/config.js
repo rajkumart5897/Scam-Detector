@@ -78,16 +78,16 @@ export const FLAG_CATEGORIES = [
 // Global design tokens used across all components.
 
 export const THEME = {
-  bg:          "#060a0f",
-  surface:     "#0b1017",
-  surfaceAlt:  "#080d14",
-  border:      "#1c2836",
-  borderLight: "#0f1820",
-  textPrimary: "#ddeeff",
-  textMuted:   "#7090a8",
-  textDim:     "#3a5060",
-  textFaint:   "#1c2836",
-  accent:      "#4a90d9",
+  bg:          "#080b0f",
+  surface:     "#0c1017",
+  surfaceAlt:  "#111820",
+  border:      "#1e2d3d",
+  borderLight: "#141e28",
+  textPrimary: "#e8f0f8",
+  textMuted:   "#8ba0b8",
+  textDim:     "#4a6070",
+  textFaint:   "#243040",
+  accent:      "#3b82f6",
 };
 
 // ─── Helper: score → risk level ──────────────────────────────────────────────

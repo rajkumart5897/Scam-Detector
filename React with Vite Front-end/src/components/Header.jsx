@@ -1,115 +1,104 @@
 // src/components/Header.jsx
-// Top navigation bar. Shows app name, model status,
-// and a live indicator when TF.js is training or ready.
-
 import { THEME } from "../constants/config";
 
 export default function Header({ tfReady, tfTraining }) {
-
-  // ── Status indicator config ─────────────────────────────────────────────────
   const status = tfTraining
-    ? { color: "#f59e0b", label: "MODEL TRAINING…", pulse: true  }
+    ? { color: "#f59e0b", label: "CONNECTING",   pulse: true  }
     : tfReady
-      ? { color: "#22c55e", label: "MODEL READY",    pulse: true  }
-      : { color: "#ef4444", label: "MODEL OFFLINE",  pulse: false };
+      ? { color: "#10b981", label: "LIVE",        pulse: true  }
+      : { color: "#ef4444", label: "OFFLINE",     pulse: false };
 
   return (
     <header style={{
-      background:   THEME.surfaceAlt,
-      borderBottom: `1px solid ${THEME.border}`,
-      padding:      "0 32px",
-      height:       "56px",
-      display:      "flex",
-      alignItems:   "center",
-      gap:          "16px",
       position:     "sticky",
       top:          0,
       zIndex:       100,
+      background:   "rgba(8,11,15,0.85)",
+      backdropFilter: "blur(12px)",
+      borderBottom: `1px solid ${THEME.border}`,
+      height:       "52px",
+      display:      "flex",
+      alignItems:   "center",
+      padding:      "0 28px",
+      gap:          "12px",
     }}>
       <style>{`
         @keyframes pulse-dot {
-          0%, 100% { opacity: 1;   }
-          50%       { opacity: 0.3; }
+          0%,100% { opacity:1; } 50% { opacity:0.3; }
         }
       `}</style>
 
-      {/* Logo mark */}
+      {/* Logo */}
       <div style={{
-        width:          "30px",
-        height:         "30px",
-        borderRadius:   "6px",
-        background:     "linear-gradient(135deg, #ef4444 0%, #f59e0b 100%)",
+        width:          "26px",
+        height:         "26px",
+        borderRadius:   "5px",
+        background:     "linear-gradient(135deg, #ef4444, #f59e0b)",
         display:        "flex",
         alignItems:     "center",
         justifyContent: "center",
-        fontSize:       "16px",
+        fontSize:       "13px",
         flexShrink:     0,
+        boxShadow:      "0 0 12px rgba(239,68,68,0.3)",
       }}>
         ⚑
       </div>
 
-      {/* App name */}
-      <div>
-        <div style={{
-          fontSize:      "14px",
-          fontWeight:    700,
-          letterSpacing: "0.12em",
+      {/* Brand */}
+      <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
+        <span style={{
+          fontSize:      "13px",
+          fontWeight:    600,
+          letterSpacing: "0.08em",
           color:         THEME.textPrimary,
-          lineHeight:    1,
         }}>
           SCAM·DETECT
-        </div>
-        <div style={{
-          fontSize:      "9px",
+        </span>
+        <span style={{
+          fontSize:      "10px",
           color:         THEME.textFaint,
-          letterSpacing: "0.1em",
-          marginTop:     "3px",
+          letterSpacing: "0.06em",
         }}>
-          ML-POWERED JOB FRAUD ANALYSIS
-        </div>
+          ML FRAUD ANALYSIS
+        </span>
       </div>
 
-      {/* Spacer */}
       <div style={{ flex: 1 }} />
 
-      {/* TF.js status */}
+      {/* Status pill */}
       <div style={{
-        display:    "flex",
-        alignItems: "center",
-        gap:        "7px",
+        display:      "flex",
+        alignItems:   "center",
+        gap:          "6px",
+        background:   THEME.surface,
+        border:       `1px solid ${THEME.border}`,
+        borderRadius: "20px",
+        padding:      "4px 12px",
       }}>
         <div style={{
-          width:        "7px",
-          height:       "7px",
+          width:        "6px",
+          height:       "6px",
           borderRadius: "50%",
           background:   status.color,
-          flexShrink:   0,
-          animation:    status.pulse
-            ? "pulse-dot 2s ease-in-out infinite"
-            : "none",
+          boxShadow:    `0 0 6px ${status.color}`,
+          animation:    status.pulse ? "pulse-dot 2s infinite" : "none",
         }} />
         <span style={{
           fontSize:      "10px",
           color:         status.color,
           letterSpacing: "0.1em",
+          fontWeight:    500,
         }}>
           {status.label}
         </span>
       </div>
 
-      {/* Window controls (decorative) */}
-      <div style={{
-        display:    "flex",
-        gap:        "5px",
-        marginLeft: "16px",
-      }}>
-        {["#ef4444", "#f59e0b", "#22c55e"].map((c, i) => (
+      {/* Window dots */}
+      <div style={{ display: "flex", gap: "5px", marginLeft: "8px" }}>
+        {["#ef4444","#f59e0b","#10b981"].map((c,i) => (
           <div key={i} style={{
-            width:        "10px",
-            height:       "10px",
-            borderRadius: "50%",
-            background:   c,
-            opacity:      0.6,
+            width: "10px", height: "10px",
+            borderRadius: "50%", background: c, opacity: 0.5,
           }} />
         ))}
       </div>
