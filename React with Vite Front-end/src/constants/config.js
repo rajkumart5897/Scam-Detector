@@ -38,9 +38,9 @@ export const RISK_CONFIG = {
 };
 
 export const SCORE_THRESHOLDS = {
-  LOW:    { min: 0,  max: 24  },
-  MEDIUM: { min: 25, max: 44  },
-  HIGH:   { min: 45, max: 100 },
+  LOW:    { min: 0,  max: 28  },
+  MEDIUM: { min: 29, max: 50  },
+  HIGH:   { min: 51, max: 100 },
 };
 
 export const ENGINE_WEIGHTS = {

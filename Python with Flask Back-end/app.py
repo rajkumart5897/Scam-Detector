@@ -500,8 +500,8 @@ def _derive_positives(text, red_flags):
 
 
 def _get_risk_level(score: int) -> str:
-    if score >= 45: return "HIGH"
-    if score >= 25: return "MEDIUM"
+    if score >= 51: return "HIGH"
+    if score >= 29: return "MEDIUM"
     return "LOW"
 
 
