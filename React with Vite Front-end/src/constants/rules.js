@@ -217,7 +217,7 @@ export const RULES = [
     title:    "No Verifiable Company Information",
     category: "Legitimacy",
     severity: "MEDIUM",
-    points:   10,
+    points:   8,
     match: (text) => {
       // Check if there's no mention of a company website or LinkedIn
       const hasWebsite = /\b(www\.|https?:\/\/|\.com|\.org|\.io)\b/i.test(text);
@@ -326,7 +326,7 @@ export const RULES = [
     title:    "No Interview Process Mentioned",
     category: "Process",
     severity: "MEDIUM",
-    points:   8,
+    points:   6,
     match: (text) => {
       const hasInterview = /(interview|screening|assessment|hiring process|selection process)/i.test(text);
       const hasNoInterview = /(no interview|immediate(ly)? (hire|start|join)|hired on the spot)/i.test(text);
