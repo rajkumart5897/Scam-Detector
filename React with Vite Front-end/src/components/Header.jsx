@@ -66,7 +66,7 @@ export default function Header({ tfReady, tfTraining }) {
         </span>
         <span style={{
           fontSize:  "10px",
-          color:     "var(--text-faint)",
+          color: "var(--text-muted)",
           letterSpacing: "0.05em",
         }}>
           ML FRAUD ANALYSIS
