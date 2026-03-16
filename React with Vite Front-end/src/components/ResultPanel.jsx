@@ -1,9 +1,4 @@
 // src/components/ResultPanel.jsx
-// Renders the full results area:
-//   - RiskBanner at the top
-//   - Tab navigation bar
-//   - Active tab content
-
 import { useState }      from "react";
 import { THEME }         from "../constants/config";
 import RiskBanner        from "./RiskBanner";
@@ -11,48 +6,42 @@ import OverviewTab       from "./tabs/OverviewTab";
 import EvidenceTab       from "./tabs/EvidenceTab";
 import MetricsTab        from "./tabs/MetricsTab";
 import ReportTab         from "./tabs/ReportTab";
+import HistoryTab        from "./tabs/HistoryTab";
 
-// ─── Tab definitions ──────────────────────────────────────────────────────────
 const TABS = [
-  {
-    id:      "overview",
-    label:   "Overview",
-    desc:    "Summary & engine scores",
-  },
-  {
-    id:      "evidence",
-    label:   "Evidence",
-    desc:    "Red flags & forensic detail",
-  },
-  {
-    id:      "metrics",
-    label:   "ML Metrics",
-    desc:    "Precision, recall, F1, confusion matrix",
-  },
-  {
-    id:      "report",
-    label:   "Report",
-    desc:    "Full printable forensic report",
-  },
+  { id: "overview", label: "Overview",   desc: "Summary & engine scores"        },
+  { id: "evidence", label: "Evidence",   desc: "Red flags & forensic detail"    },
+  { id: "metrics",  label: "ML Metrics", desc: "Precision, recall, F1"          },
+  { id: "report",   label: "Report",     desc: "Full printable forensic report" },
+  { id: "history",  label: "History",    desc: "Past analyses from database"    },
 ];
 
-export default function ResultPanel({ result }) {
+export default function ResultPanel({
+  result,
+  history,
+  historyStats,
+  historyLoading,
+  onDelete,
+  onFeedback,
+}) {
   const [activeTab, setActiveTab] = useState("overview");
-
-  // Reset to overview whenever a new result comes in
-  // (handled by key prop in App.jsx)
 
   const tabComponents = {
     overview: <OverviewTab result={result} />,
     evidence: <EvidenceTab result={result} />,
     metrics:  <MetricsTab  result={result} />,
     report:   <ReportTab   result={result} />,
+    history:  <HistoryTab
+                history={history       || []}
+                historyStats={historyStats}
+                historyLoading={historyLoading}
+                onDelete={onDelete}
+                onFeedback={onFeedback}
+              />,
   };
 
   return (
     <div>
-
-      {/* Risk banner */}
       <RiskBanner result={result} />
 
       {/* Tab bar */}
@@ -89,16 +78,27 @@ export default function ResultPanel({ result }) {
               }}
             >
               {tab.label}
+              {tab.id === "history" && history?.length > 0 && (
+                <span style={{
+                  marginLeft:    "5px",
+                  background:    THEME.border,
+                  borderRadius:  "8px",
+                  padding:       "1px 5px",
+                  fontSize:      "9px",
+                  color:         THEME.textMuted,
+                }}>
+                  {history.length}
+                </span>
+              )}
             </button>
           );
         })}
       </div>
 
-      {/* Active tab content */}
+      {/* Active tab */}
       <div style={{ animation: "fadeUp 0.3s ease" }}>
         {tabComponents[activeTab]}
       </div>
-
     </div>
   );
 }
