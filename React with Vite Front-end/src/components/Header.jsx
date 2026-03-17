@@ -40,19 +40,16 @@ export default function Header({ tfReady, tfTraining }) {
       `}</style>
 
       {/* Logo */}
-      <div className="header-logo" style={{
-        width:          "28px",
-        height:         "28px",
-        borderRadius:   "6px",
-        background:     "linear-gradient(135deg, var(--danger), var(--warning))",
-        display:        "flex",
-        alignItems:     "center",
-        justifyContent: "center",
-        fontSize:       "14px",
-        flexShrink:     0,
-      }}>
-        ⚑
-      </div>
+      <img
+        src="/logo.svg"
+        alt="ScamDetect"
+        className="header-logo"
+        style={{
+          width:      "32px",
+          height:     "32px",
+          flexShrink: 0,
+          filter:     "drop-shadow(0 0 2px var(--accent))",}}
+      />
 
       {/* Brand */}
       <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
